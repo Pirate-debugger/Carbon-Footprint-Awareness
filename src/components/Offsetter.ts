@@ -109,7 +109,7 @@ export function renderOffsetter(onUpdateNav: () => void): void {
     const cards = vp.querySelectorAll('.offset-card');
     cards.forEach(card => {
       const projectId = card.getAttribute('data-project-id');
-      const sponsorBtn = card.querySelector('.btn-sponsor');
+      const sponsorBtn = card.querySelector('.btn-sponsor') as HTMLElement;
       const unitsInput = card.querySelector('.offset-number-input') as HTMLInputElement;
 
       if (sponsorBtn && projectId && unitsInput) {
@@ -120,13 +120,13 @@ export function renderOffsetter(onUpdateNav: () => void): void {
             return;
           }
           
-          showCheckoutModal(projectId, units);
+          showCheckoutModal(projectId, units, sponsorBtn);
         });
       }
     });
   }
 
-  function showCheckoutModal(projectId: string, units: number): void {
+  function showCheckoutModal(projectId: string, units: number, triggerEl: HTMLElement): void {
     const project = OFFSET_PROJECTS.find(p => p.id === projectId);
     if (!project) return;
 
@@ -138,7 +138,7 @@ export function renderOffsetter(onUpdateNav: () => void): void {
 
     modalContainer.innerHTML = `
       <div class="modal-content" style="max-width: 550px; text-align: left;">
-        <button class="modal-close" id="btn-close-checkout">&times;</button>
+        <button class="modal-close" id="btn-close-checkout" aria-label="Close Checkout">&times;</button>
         
         <h2 class="mb-4 text-center" style="font-size: 24px; color: var(--primary-light);">
           Sponsorship Checkout
@@ -199,9 +199,14 @@ export function renderOffsetter(onUpdateNav: () => void): void {
     `;
 
     modalContainer.classList.remove('hidden');
+    // Shift focus to the modal close button for accessibility
+    setTimeout(() => {
+      document.getElementById('btn-close-checkout')?.focus();
+    }, 50);
 
     const closeModal = () => {
       modalContainer.classList.add('hidden');
+      triggerEl.focus(); // Return focus to the opening element
     };
 
     document.getElementById('btn-close-checkout')?.addEventListener('click', closeModal);

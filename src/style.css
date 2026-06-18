@@ -1286,3 +1286,12 @@ a:hover {
   line-height: 1.2;
 }
 
+/* Keyboard Accessibility Focus Rings */
+button:focus-visible,
+[tabindex="0"]:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--primary-light);
+  outline-offset: 4px;
+}
+

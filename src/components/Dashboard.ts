@@ -218,12 +218,13 @@ export function renderDashboard(onNavigate: (tabId: string) => void): void {
 
   // View Certificate
   if (netFootprint <= 0) {
-    document.getElementById('btn-view-cert')?.addEventListener('click', () => {
-      showCertificateModal();
+    const certBtn = document.getElementById('btn-view-cert');
+    certBtn?.addEventListener('click', () => {
+      showCertificateModal(certBtn);
     });
   }
 
-  function showCertificateModal(): void {
+  function showCertificateModal(triggerEl: HTMLElement): void {
     const modalContainer = document.getElementById('modal-container');
     if (!modalContainer) return;
 
@@ -277,9 +278,14 @@ export function renderDashboard(onNavigate: (tabId: string) => void): void {
     `;
 
     modalContainer.classList.remove('hidden');
+    // Shift focus to the close button for accessibility
+    setTimeout(() => {
+      document.getElementById('btn-close-cert')?.focus();
+    }, 50);
 
     const closeModal = () => {
       modalContainer.classList.add('hidden');
+      triggerEl.focus(); // Return focus to opening button
     };
 
     document.getElementById('btn-close-cert')?.addEventListener('click', closeModal);

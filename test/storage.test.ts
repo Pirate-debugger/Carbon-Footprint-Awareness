@@ -121,6 +121,59 @@ describe('Storage & Gamification Manager', () => {
     expect(result.state.badges.find(b => b.id === 'offset_first')?.unlocked).toBe(true);
   });
 
+  it('should unlock eco_champion badge when gross footprint is under 4000 kg', () => {
+    resetAppState();
+    // Set custom inputs that yield < 4000 kg CO2e
+    const lowInputs = {
+      ...DEFAULT_INPUTS,
+      vehicleType: 'none',
+      electricityKwh: 50,
+      gasKwh: 0,
+      dietType: 'vegan',
+      wasteKg: 2
+    };
+    const updated = updateCalculatorInputs(lowInputs);
+    expect(updated.badges.find(b => b.id === 'eco_champion')?.unlocked).toBe(true);
+  });
+
+  it('should unlock habit_pro badge after logging habits 5 times', () => {
+    resetAppState();
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Log habits 5 times
+    toggleHabitCompletion('bike_commute', today);
+    toggleHabitCompletion('cold_wash', today);
+    toggleHabitCompletion('air_dry', today);
+    toggleHabitCompletion('unplug_appliances', today);
+    const result = toggleHabitCompletion('meat_free_day', today);
+    
+    expect(result.state.badges.find(b => b.id === 'habit_pro')?.unlocked).toBe(true);
+  });
+
+  it('should unlock carbon_neutral badge when net footprint is 0 or less', () => {
+    resetAppState();
+    // Complete onboarding first
+    const updated = updateCalculatorInputs(DEFAULT_INPUTS); // gross is ~6658 kg
+    
+    // Purchase enough offsets to cover the gross footprint (e.g. 7500 kg)
+    // Amazon Reforestation is 150 kg per unit. 50 units * 150 kg = 7500 kg.
+    const result = purchaseOffset('amazon_reforestation', 50);
+    expect(result.state.badges.find(b => b.id === 'carbon_neutral')?.unlocked).toBe(true);
+  });
+
+  it('should unlock level_5 badge when user reaches level 5', () => {
+    resetAppState();
+    const state = getAppState();
+    state.ecoPoints = 370; // 30 points away from Level 5 (400 XP)
+    state.level = 4;
+    saveAppState(state);
+    
+    // Toggle a habit (bike commute is +50 points) -> 420 points -> Level 5
+    const { state: updated } = toggleHabitCompletion('bike_commute', '2026-06-18');
+    expect(updated.level).toBe(5);
+    expect(updated.badges.find(b => b.id === 'level_5')?.unlocked).toBe(true);
+  });
+
   describe('Habits Streaks Calculation', () => {
     const getPastDateStr = (daysAgo: number): string => {
       const d = new Date();

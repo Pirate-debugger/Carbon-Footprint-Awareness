@@ -12,7 +12,7 @@ export function renderNavigation(activeTab: string, onTabChange: (tabId: string)
   const xpPercentage = (xpCurrentLevel / xpNeeded) * 100;
 
   header.innerHTML = `
-    <div class="logo-container" id="nav-logo">
+    <div class="logo-container" id="nav-logo" tabindex="0" role="button" aria-label="EcoSphere Home, Go to Dashboard">
       <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1 9.8a7 7 0 0 1-9 8.2Z"/>
         <path d="M9 22v-4h4"/>
@@ -20,13 +20,13 @@ export function renderNavigation(activeTab: string, onTabChange: (tabId: string)
       <span class="logo-text">EcoSphere</span>
     </div>
     
-    <nav class="nav-links" role="navigation">
-      <button class="nav-link ${activeTab === 'dashboard' ? 'active' : ''}" data-tab="dashboard">Dashboard</button>
-      <button class="nav-link ${activeTab === 'calculator' ? 'active' : ''}" data-tab="calculator">Calculator</button>
-      <button class="nav-link ${activeTab === 'habits' ? 'active' : ''}" data-tab="habits">Habits & Actions</button>
-      <button class="nav-link ${activeTab === 'simulator' ? 'active' : ''}" data-tab="simulator">Simulator</button>
-      <button class="nav-link ${activeTab === 'offsets' ? 'active' : ''}" data-tab="offsets">Offset Projects</button>
-      <button class="nav-link ${activeTab === 'learn' ? 'active' : ''}" data-tab="learn">Resource Hub</button>
+    <nav class="nav-links" role="navigation" aria-label="Main Navigation">
+      <button class="nav-link ${activeTab === 'dashboard' ? 'active' : ''}" data-tab="dashboard" aria-current="${activeTab === 'dashboard' ? 'page' : 'false'}">Dashboard</button>
+      <button class="nav-link ${activeTab === 'calculator' ? 'active' : ''}" data-tab="calculator" aria-current="${activeTab === 'calculator' ? 'page' : 'false'}">Calculator</button>
+      <button class="nav-link ${activeTab === 'habits' ? 'active' : ''}" data-tab="habits" aria-current="${activeTab === 'habits' ? 'page' : 'false'}">Habits & Actions</button>
+      <button class="nav-link ${activeTab === 'simulator' ? 'active' : ''}" data-tab="simulator" aria-current="${activeTab === 'simulator' ? 'page' : 'false'}">Simulator</button>
+      <button class="nav-link ${activeTab === 'offsets' ? 'active' : ''}" data-tab="offsets" aria-current="${activeTab === 'offsets' ? 'page' : 'false'}">Offset Projects</button>
+      <button class="nav-link ${activeTab === 'learn' ? 'active' : ''}" data-tab="learn" aria-current="${activeTab === 'learn' ? 'page' : 'false'}">Resource Hub</button>
     </nav>
     
     <div class="header-stats">
@@ -49,7 +49,14 @@ export function renderNavigation(activeTab: string, onTabChange: (tabId: string)
   // Attach event listeners
   const logo = header.querySelector('#nav-logo');
   if (logo) {
-    logo.addEventListener('click', () => onTabChange('dashboard'));
+    const triggerHome = () => onTabChange('dashboard');
+    logo.addEventListener('click', triggerHome);
+    logo.addEventListener('keydown', (e: any) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        triggerHome();
+      }
+    });
   }
 
   const buttons = header.querySelectorAll('.nav-link');

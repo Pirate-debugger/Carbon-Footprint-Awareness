@@ -165,7 +165,7 @@ export function renderSimulator(): void {
 
           <!-- Recycling streams check -->
           <div class="form-group">
-            <label class="checkbox-card ${simRecyclingActive ? 'selected' : ''}" id="sim-recycle-toggle">
+            <label class="checkbox-card ${simRecyclingActive ? 'selected' : ''}" id="sim-recycle-toggle" tabindex="0" role="checkbox" aria-checked="${simRecyclingActive ? 'true' : 'false'}">
               <div class="checkbox-custom"></div>
               <div>
                 <strong style="display: block; font-size: 14px;">Enable All Recycling Streams</strong>
@@ -249,11 +249,24 @@ export function renderSimulator(): void {
 
     // Recycling Toggle Checkbox
     const recycleCard = document.getElementById('sim-recycle-toggle');
-    recycleCard?.addEventListener('click', (e) => {
-      e.preventDefault();
-      simRecyclingActive = !simRecyclingActive;
-      renderView();
-    });
+    if (recycleCard) {
+      const toggleRecycling = () => {
+        simRecyclingActive = !simRecyclingActive;
+        renderView();
+      };
+      
+      recycleCard.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleRecycling();
+      });
+      
+      recycleCard.addEventListener('keydown', (e: any) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleRecycling();
+        }
+      });
+    }
   }
 
   renderView();

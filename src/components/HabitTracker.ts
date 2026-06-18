@@ -171,7 +171,7 @@ export function renderHabitTracker(onUpdateNav: () => void): void {
             // Check if level-up
             if (result.leveledUp) {
               triggerConfetti();
-              showLevelUpModal(result.state.level);
+              showLevelUpModal(result.state.level, actionBtn as HTMLElement);
             }
           } else {
             showToast('Action log removed.', 'info');
@@ -211,7 +211,7 @@ export function renderHabitTracker(onUpdateNav: () => void): void {
     });
   }
 
-  function showLevelUpModal(level: number): void {
+  function showLevelUpModal(level: number, triggerEl: HTMLElement): void {
     const modalContainer = document.getElementById('modal-container');
     if (!modalContainer) return;
 
@@ -231,9 +231,14 @@ export function renderHabitTracker(onUpdateNav: () => void): void {
     `;
 
     modalContainer.classList.remove('hidden');
+    // Shift focus to the close button for accessibility
+    setTimeout(() => {
+      document.getElementById('btn-close-modal')?.focus();
+    }, 50);
 
     const closeModal = () => {
       modalContainer.classList.add('hidden');
+      triggerEl.focus(); // Return focus to opening button
     };
 
     document.getElementById('btn-close-modal')?.addEventListener('click', closeModal);

@@ -225,12 +225,12 @@ export function renderLearnHub(): void {
       const articleId = card?.getAttribute('data-article-id');
       
       btn.addEventListener('click', () => {
-        if (articleId) showArticleModal(articleId);
+        if (articleId) showArticleModal(articleId, btn as HTMLElement);
       });
     });
   }
 
-  function showArticleModal(id: string): void {
+  function showArticleModal(id: string, triggerEl: HTMLElement): void {
     const article = ARTICLES.find(a => a.id === id);
     if (!article) return;
 
@@ -239,7 +239,7 @@ export function renderLearnHub(): void {
 
     modalContainer.innerHTML = `
       <div class="modal-content" style="max-width: 650px; text-align: left; max-height: 85vh; overflow-y: auto;">
-        <button class="modal-close" id="btn-close-article" style="position: sticky; top: 0; float: right;">&times;</button>
+        <button class="modal-close" id="btn-close-article" style="position: sticky; top: 0; float: right;" aria-label="Close Article">&times;</button>
         
         <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--primary-light); margin-bottom: 8px;">
           ${article.category.toUpperCase()} • ${article.readTime}
@@ -260,9 +260,14 @@ export function renderLearnHub(): void {
     `;
 
     modalContainer.classList.remove('hidden');
+    // Shift focus to the close button for accessibility
+    setTimeout(() => {
+      document.getElementById('btn-close-article')?.focus();
+    }, 50);
 
     const closeModal = () => {
       modalContainer.classList.add('hidden');
+      triggerEl.focus(); // Return focus to opening button
     };
 
     document.getElementById('btn-close-article')?.addEventListener('click', closeModal);
