@@ -8,7 +8,8 @@ import {
   purchaseOffset, 
   calculateStreak,
   updateUserName,
-  getNetFootprint
+  getNetFootprint,
+  calculateLevel
 } from '../src/core/storage';
 import { DEFAULT_INPUTS } from '../src/core/calculator';
 
@@ -61,6 +62,26 @@ describe('Storage & Gamification Manager', () => {
     updateUserName('   ');
     const state = getAppState();
     expect(state.userName).toBe('Eco Citizen');
+  });
+
+  it('should fallback to default state if localStorage getItem throws', () => {
+    const originalGetItem = localStorageMock.getItem;
+    localStorageMock.getItem = () => {
+      throw new Error('Storage disabled');
+    };
+    try {
+      const state = getAppState();
+      expect(state.userName).toBe('Eco Citizen');
+    } finally {
+      localStorageMock.getItem = originalGetItem;
+    }
+  });
+
+  it('should calculate levels correctly based on points', () => {
+    expect(calculateLevel(0)).toBe(1);
+    expect(calculateLevel(99)).toBe(1);
+    expect(calculateLevel(100)).toBe(2);
+    expect(calculateLevel(450)).toBe(5);
   });
 
   it('should calculate correct gross footprints and unlock first_calc badge', () => {

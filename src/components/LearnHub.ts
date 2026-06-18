@@ -140,13 +140,13 @@ export function renderLearnHub(): void {
         <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
           
           <!-- Filter Tabs -->
-          <div class="habits-filter-bar" style="margin-bottom: 0;">
-            <button class="filter-btn ${activeCategory === 'all' ? 'active' : ''}" data-cat="all">All Topics</button>
-            <button class="filter-btn ${activeCategory === 'science' ? 'active' : ''}" data-cat="science">Carbon Science</button>
-            <button class="filter-btn ${activeCategory === 'home' ? 'active' : ''}" data-cat="home">Home Energy</button>
-            <button class="filter-btn ${activeCategory === 'diet' ? 'active' : ''}" data-cat="diet">Eco-Diet</button>
-            <button class="filter-btn ${activeCategory === 'travel' ? 'active' : ''}" data-cat="travel">Green Travel</button>
-            <button class="filter-btn ${activeCategory === 'waste' ? 'active' : ''}" data-cat="waste">Zero Waste</button>
+          <div class="habits-filter-bar" style="margin-bottom: 0;" role="tablist" aria-label="Article Topics" id="articles-filter-bar">
+            <button class="filter-btn ${activeCategory === 'all' ? 'active' : ''}" data-cat="all" role="tab" aria-selected="${activeCategory === 'all' ? 'true' : 'false'}" aria-controls="articles-grid">All Topics</button>
+            <button class="filter-btn ${activeCategory === 'science' ? 'active' : ''}" data-cat="science" role="tab" aria-selected="${activeCategory === 'science' ? 'true' : 'false'}" aria-controls="articles-grid">Carbon Science</button>
+            <button class="filter-btn ${activeCategory === 'home' ? 'active' : ''}" data-cat="home" role="tab" aria-selected="${activeCategory === 'home' ? 'true' : 'false'}" aria-controls="articles-grid">Home Energy</button>
+            <button class="filter-btn ${activeCategory === 'diet' ? 'active' : ''}" data-cat="diet" role="tab" aria-selected="${activeCategory === 'diet' ? 'true' : 'false'}" aria-controls="articles-grid">Eco-Diet</button>
+            <button class="filter-btn ${activeCategory === 'travel' ? 'active' : ''}" data-cat="travel" role="tab" aria-selected="${activeCategory === 'travel' ? 'true' : 'false'}" aria-controls="articles-grid">Green Travel</button>
+            <button class="filter-btn ${activeCategory === 'waste' ? 'active' : ''}" data-cat="waste" role="tab" aria-selected="${activeCategory === 'waste' ? 'true' : 'false'}" aria-controls="articles-grid">Zero Waste</button>
           </div>
 
           <!-- Search Input -->
@@ -159,7 +159,7 @@ export function renderLearnHub(): void {
       </div>
 
       <!-- Articles Grid -->
-      <div class="learn-grid">
+      <div class="learn-grid" id="articles-grid" role="tabpanel" aria-labelledby="articles-filter-bar">
         ${filteredArticles.length === 0 ? `
           <div class="glass-card widget-span-12 text-center text-muted-color" style="padding: 40px 0; grid-column: 1 / -1;">
             <div style="font-size: 44px; margin-bottom: 12px;">📚</div>

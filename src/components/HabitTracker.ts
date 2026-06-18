@@ -51,15 +51,15 @@ export function renderHabitTracker(onUpdateNav: () => void): void {
           <div class="glass-card mb-4">
             <h3 class="mb-4">Log Daily Habits</h3>
             
-            <div class="habits-filter-bar" role="tablist" aria-label="Habit Categories">
-              <button class="filter-btn ${activeFilter === 'all' ? 'active' : ''}" data-filter="all" role="tab" aria-selected="${activeFilter === 'all' ? 'true' : 'false'}">All Categories</button>
-              <button class="filter-btn ${activeFilter === 'transport' ? 'active' : ''}" data-filter="transport" role="tab" aria-selected="${activeFilter === 'transport' ? 'true' : 'false'}">Transport</button>
-              <button class="filter-btn ${activeFilter === 'energy' ? 'active' : ''}" data-filter="energy" role="tab" aria-selected="${activeFilter === 'energy' ? 'true' : 'false'}">Home Energy</button>
-              <button class="filter-btn ${activeFilter === 'food' ? 'active' : ''}" data-filter="food" role="tab" aria-selected="${activeFilter === 'food' ? 'true' : 'false'}">Diet & Food</button>
-              <button class="filter-btn ${activeFilter === 'waste' ? 'active' : ''}" data-filter="waste" role="tab" aria-selected="${activeFilter === 'waste' ? 'true' : 'false'}">Waste & Recycling</button>
+            <div class="habits-filter-bar" role="tablist" aria-label="Habit Categories" id="habits-filter-bar">
+              <button class="filter-btn ${activeFilter === 'all' ? 'active' : ''}" data-filter="all" role="tab" aria-selected="${activeFilter === 'all' ? 'true' : 'false'}" aria-controls="habits-feed">All Categories</button>
+              <button class="filter-btn ${activeFilter === 'transport' ? 'active' : ''}" data-filter="transport" role="tab" aria-selected="${activeFilter === 'transport' ? 'true' : 'false'}" aria-controls="habits-feed">Transport</button>
+              <button class="filter-btn ${activeFilter === 'energy' ? 'active' : ''}" data-filter="energy" role="tab" aria-selected="${activeFilter === 'energy' ? 'true' : 'false'}" aria-controls="habits-feed">Home Energy</button>
+              <button class="filter-btn ${activeFilter === 'food' ? 'active' : ''}" data-filter="food" role="tab" aria-selected="${activeFilter === 'food' ? 'true' : 'false'}" aria-controls="habits-feed">Diet & Food</button>
+              <button class="filter-btn ${activeFilter === 'waste' ? 'active' : ''}" data-filter="waste" role="tab" aria-selected="${activeFilter === 'waste' ? 'true' : 'false'}" aria-controls="habits-feed">Waste & Recycling</button>
             </div>
 
-            <div class="habits-list" role="feed" aria-busy="false">
+            <div class="habits-list" id="habits-feed" role="tabpanel" aria-labelledby="habits-filter-bar">
               ${filteredHabits.map(habit => {
                 const isCompletedToday = habit.completedDates.includes(todayStr);
                 const count = habit.completedDates.length;
@@ -77,7 +77,7 @@ export function renderHabitTracker(onUpdateNav: () => void): void {
                         <span>Logged: <strong style="color: var(--text-primary);">${count} ${count === 1 ? 'time' : 'times'}</strong></span>
                       </div>
                     </div>
-                    <button class="habit-action-btn" aria-label="Mark habit ${habit.title} completed" title="Toggle Daily Completion" role="checkbox" aria-checked="${isCompletedToday ? 'true' : 'false'}">
+                    <button class="habit-action-btn" aria-label="Toggle completion for ${habit.title}" aria-pressed="${isCompletedToday ? 'true' : 'false'}" title="Toggle Daily Completion">
                       ${isCompletedToday ? '✓' : '+'}
                     </button>
                   </div>

@@ -30,7 +30,7 @@ export function renderNavigation(activeTab: string, onTabChange: (tabId: string)
     </nav>
     
     <div class="header-stats">
-      <div class="level-badge" title="${state.ecoPoints} total Eco-Points. ${xpNeeded - xpCurrentLevel} XP until Level ${state.level + 1}!">
+      <div class="level-badge" tabindex="0" role="status" aria-label="Level ${state.level}, ${state.ecoPoints} total Eco-points. ${xpNeeded - xpCurrentLevel} XP until Level ${state.level + 1}!" title="${state.ecoPoints} total Eco-Points. ${xpNeeded - xpCurrentLevel} XP until Level ${state.level + 1}!">
         <span>LVL</span>
         <span class="level-number">${state.level}</span>
       </div>
