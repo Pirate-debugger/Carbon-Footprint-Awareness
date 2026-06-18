@@ -14,7 +14,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Serve stage
-FROM nginx:alpine
+FROM nginxinc/nginx-unprivileged:alpine
 
 # Copy Nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf

@@ -1,6 +1,7 @@
 import Chart from 'chart.js/auto';
 import { getAppState, getNetFootprint } from '../core/storage';
 import { CARBON_STANDARDS } from '../core/calculator';
+import { escapeHTML } from '../utils/sanitize';
 
 export function renderDashboard(onNavigate: (tabId: string) => void): void {
   const viewport = document.getElementById('app-viewport');
@@ -239,7 +240,7 @@ export function renderDashboard(onNavigate: (tabId: string) => void): void {
           <div class="certificate-title">Certificate of Carbon Neutrality</div>
           <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em;">This is proudly presented to</p>
           
-          <div class="certificate-name">${state.userName}</div>
+          <div class="certificate-name">${escapeHTML(state.userName)}</div>
           
           <p style="font-size: 13.5px; line-height: 1.5; color: #475569; max-width: 460px; margin: 0 auto 20px auto;">
             for successfully neutralizing their calculated annual greenhouse gas emissions through green habits and clean energy sponsorships, achieving a net-zero carbon ledger.

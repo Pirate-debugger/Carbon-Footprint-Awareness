@@ -1,6 +1,7 @@
 import { getAppState, updateCalculatorInputs, updateUserName } from '../core/storage';
 import type { CalculatorInputs } from '../types';
 import { showToast } from '../utils/toast';
+import { escapeHTML } from '../utils/sanitize';
 
 export function renderCalculator(onComplete: () => void): void {
   const viewport = document.getElementById('app-viewport');
@@ -31,7 +32,7 @@ export function renderCalculator(onComplete: () => void): void {
         return `
           <div class="form-group">
             <label class="form-label" for="user-name-input">Your Full Name (for certificates & achievements)</label>
-            <input type="text" class="form-control" id="user-name-input" placeholder="Eco Citizen" value="${draftUserName}" required>
+            <input type="text" class="form-control" id="user-name-input" placeholder="Eco Citizen" value="${escapeHTML(draftUserName)}" required>
           </div>
 
           <div class="form-group mt-4">

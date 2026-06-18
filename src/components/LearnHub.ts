@@ -1,3 +1,5 @@
+import { escapeHTML } from '../utils/sanitize';
+
 interface Article {
   id: string;
   title: string;
@@ -149,7 +151,7 @@ export function renderLearnHub(): void {
 
           <!-- Search Input -->
           <div style="position: relative; width: 260px;">
-            <input type="text" class="form-control" id="search-articles" placeholder="Search resources..." value="${searchQuery}" style="padding-right: 36px; border-radius: 20px;" aria-label="Search articles">
+            <input type="text" class="form-control" id="search-articles" placeholder="Search resources..." value="${escapeHTML(searchQuery)}" style="padding-right: 36px; border-radius: 20px;" aria-label="Search articles">
             <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); opacity: 0.5; pointer-events: none;">🔍</span>
           </div>
 
