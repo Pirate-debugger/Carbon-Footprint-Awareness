@@ -1,4 +1,4 @@
-import { getAppState, updateCalculatorInputs } from '../core/storage';
+import { getAppState, updateCalculatorInputs, updateUserName } from '../core/storage';
 import type { CalculatorInputs } from '../types';
 import { showToast } from '../utils/toast';
 
@@ -13,6 +13,7 @@ export function renderCalculator(onComplete: () => void): void {
 
   // Clone active state inputs so edits are draft until submitted
   const draftInputs: CalculatorInputs = JSON.parse(JSON.stringify(state.inputs));
+  let draftUserName = state.userName || 'Eco Citizen';
 
   function getStepTitle(step: number): string {
     switch(step) {
@@ -29,29 +30,34 @@ export function renderCalculator(onComplete: () => void): void {
       case 1:
         return `
           <div class="form-group">
+            <label class="form-label" for="user-name-input">Your Full Name (for certificates & achievements)</label>
+            <input type="text" class="form-control" id="user-name-input" placeholder="Eco Citizen" value="${draftUserName}" required>
+          </div>
+
+          <div class="form-group mt-4">
             <label class="form-label">Primary Personal Vehicle Type</label>
             <div class="option-grid">
-              <div class="select-card ${draftInputs.vehicleType === 'petrol' ? 'selected' : ''}" data-val="petrol">
+              <div class="select-card ${draftInputs.vehicleType === 'petrol' ? 'selected' : ''}" data-val="petrol" tabindex="0" role="button" aria-pressed="${draftInputs.vehicleType === 'petrol' ? 'true' : 'false'}">
                 <div style="font-size: 24px; margin-bottom: 8px;">🚗</div>
                 <div style="font-weight: 700; font-size: 14px;">Petrol Car</div>
               </div>
-              <div class="select-card ${draftInputs.vehicleType === 'diesel' ? 'selected' : ''}" data-val="diesel">
+              <div class="select-card ${draftInputs.vehicleType === 'diesel' ? 'selected' : ''}" data-val="diesel" tabindex="0" role="button" aria-pressed="${draftInputs.vehicleType === 'diesel' ? 'true' : 'false'}">
                 <div style="font-size: 24px; margin-bottom: 8px;">🚙</div>
                 <div style="font-weight: 700; font-size: 14px;">Diesel Car</div>
               </div>
-              <div class="select-card ${draftInputs.vehicleType === 'hybrid' ? 'selected' : ''}" data-val="hybrid">
+              <div class="select-card ${draftInputs.vehicleType === 'hybrid' ? 'selected' : ''}" data-val="hybrid" tabindex="0" role="button" aria-pressed="${draftInputs.vehicleType === 'hybrid' ? 'true' : 'false'}">
                 <div style="font-size: 24px; margin-bottom: 8px;">🔌</div>
                 <div style="font-weight: 700; font-size: 14px;">Hybrid</div>
               </div>
-              <div class="select-card ${draftInputs.vehicleType === 'electric' ? 'selected' : ''}" data-val="electric">
+              <div class="select-card ${draftInputs.vehicleType === 'electric' ? 'selected' : ''}" data-val="electric" tabindex="0" role="button" aria-pressed="${draftInputs.vehicleType === 'electric' ? 'true' : 'false'}">
                 <div style="font-size: 24px; margin-bottom: 8px;">⚡</div>
                 <div style="font-weight: 700; font-size: 14px;">Electric</div>
               </div>
-              <div class="select-card ${draftInputs.vehicleType === 'motorcycle' ? 'selected' : ''}" data-val="motorcycle">
+              <div class="select-card ${draftInputs.vehicleType === 'motorcycle' ? 'selected' : ''}" data-val="motorcycle" tabindex="0" role="button" aria-pressed="${draftInputs.vehicleType === 'motorcycle' ? 'true' : 'false'}">
                 <div style="font-size: 24px; margin-bottom: 8px;">🏍️</div>
                 <div style="font-weight: 700; font-size: 14px;">Motorcycle</div>
               </div>
-              <div class="select-card ${draftInputs.vehicleType === 'none' ? 'selected' : ''}" data-val="none">
+              <div class="select-card ${draftInputs.vehicleType === 'none' ? 'selected' : ''}" data-val="none" tabindex="0" role="button" aria-pressed="${draftInputs.vehicleType === 'none' ? 'true' : 'false'}">
                 <div style="font-size: 24px; margin-bottom: 8px;">🚶</div>
                 <div style="font-weight: 700; font-size: 14px;">No Vehicle</div>
               </div>
@@ -122,7 +128,7 @@ export function renderCalculator(onComplete: () => void): void {
           </div>
 
           <div class="form-group mt-4">
-            <label class="checkbox-card ${draftInputs.hasSolar ? 'selected' : ''}" id="solar-checkbox">
+            <label class="checkbox-card ${draftInputs.hasSolar ? 'selected' : ''}" id="solar-checkbox" tabindex="0" role="checkbox" aria-checked="${draftInputs.hasSolar ? 'true' : 'false'}">
               <div class="checkbox-custom"></div>
               <div>
                 <strong style="display: block; font-size: 15px;">Micro-generation Solar Setup</strong>
@@ -136,22 +142,22 @@ export function renderCalculator(onComplete: () => void): void {
           <div class="form-group">
             <label class="form-label">Primary Diet Profile</label>
             <div class="option-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-              <div class="select-card ${draftInputs.dietType === 'heavy-meat' ? 'selected' : ''}" data-diet="heavy-meat">
+              <div class="select-card ${draftInputs.dietType === 'heavy-meat' ? 'selected' : ''}" data-diet="heavy-meat" tabindex="0" role="button" aria-pressed="${draftInputs.dietType === 'heavy-meat' ? 'true' : 'false'}">
                 <div style="font-size: 26px; margin-bottom: 8px;">🥩</div>
                 <strong style="display: block; font-size: 15px;">Meat-Heavy</strong>
                 <span style="font-size: 11px; color: var(--text-secondary); display: block; margin-top: 4px;">Frequent consumption of red meats (beef, pork, lamb).</span>
               </div>
-              <div class="select-card ${draftInputs.dietType === 'average' ? 'selected' : ''}" data-diet="average">
+              <div class="select-card ${draftInputs.dietType === 'average' ? 'selected' : ''}" data-diet="average" tabindex="0" role="button" aria-pressed="${draftInputs.dietType === 'average' ? 'true' : 'false'}">
                 <div style="font-size: 26px; margin-bottom: 8px;">🍗</div>
                 <strong style="display: block; font-size: 15px;">Balanced Average</strong>
                 <span style="font-size: 11px; color: var(--text-secondary); display: block; margin-top: 4px;">Standard intake of chicken, fish, dairy, and occasional red meat.</span>
               </div>
-              <div class="select-card ${draftInputs.dietType === 'vegetarian' ? 'selected' : ''}" data-diet="vegetarian">
+              <div class="select-card ${draftInputs.dietType === 'vegetarian' ? 'selected' : ''}" data-diet="vegetarian" tabindex="0" role="button" aria-pressed="${draftInputs.dietType === 'vegetarian' ? 'true' : 'false'}">
                 <div style="font-size: 26px; margin-bottom: 8px;">🧀</div>
                 <strong style="display: block; font-size: 15px;">Vegetarian</strong>
                 <span style="font-size: 11px; color: var(--text-secondary); display: block; margin-top: 4px;">No meat or fish; includes cheese, milk, eggs, and plants.</span>
               </div>
-              <div class="select-card ${draftInputs.dietType === 'vegan' ? 'selected' : ''}" data-diet="vegan">
+              <div class="select-card ${draftInputs.dietType === 'vegan' ? 'selected' : ''}" data-diet="vegan" tabindex="0" role="button" aria-pressed="${draftInputs.dietType === 'vegan' ? 'true' : 'false'}">
                 <div style="font-size: 26px; margin-bottom: 8px;">🥗</div>
                 <strong style="display: block; font-size: 15px;">Vegan / Plant-Based</strong>
                 <span style="font-size: 11px; color: var(--text-secondary); display: block; margin-top: 4px;">100% plant-sourced nutrition. Lowest footprint index.</span>
@@ -189,22 +195,22 @@ export function renderCalculator(onComplete: () => void): void {
           <div class="form-group mt-4">
             <label class="form-label">Active Recycling Habit Streams (Saves Carbon Credits)</label>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-              <label class="checkbox-card ${draftInputs.recyclePaper ? 'selected' : ''}" id="recycle-paper-box">
+              <label class="checkbox-card ${draftInputs.recyclePaper ? 'selected' : ''}" id="recycle-paper-box" tabindex="0" role="checkbox" aria-checked="${draftInputs.recyclePaper ? 'true' : 'false'}">
                 <div class="checkbox-custom"></div>
                 <div>Paper & Cardboard</div>
               </label>
               
-              <label class="checkbox-card ${draftInputs.recyclePlastic ? 'selected' : ''}" id="recycle-plastic-box">
+              <label class="checkbox-card ${draftInputs.recyclePlastic ? 'selected' : ''}" id="recycle-plastic-box" tabindex="0" role="checkbox" aria-checked="${draftInputs.recyclePlastic ? 'true' : 'false'}">
                 <div class="checkbox-custom"></div>
                 <div>Plastics (PET/HDPE)</div>
               </label>
 
-              <label class="checkbox-card ${draftInputs.recycleGlass ? 'selected' : ''}" id="recycle-glass-box">
+              <label class="checkbox-card ${draftInputs.recycleGlass ? 'selected' : ''}" id="recycle-glass-box" tabindex="0" role="checkbox" aria-checked="${draftInputs.recycleGlass ? 'true' : 'false'}">
                 <div class="checkbox-custom"></div>
                 <div>Glass Jars & Bottles</div>
               </label>
 
-              <label class="checkbox-card ${draftInputs.recycleMetal ? 'selected' : ''}" id="recycle-metal-box">
+              <label class="checkbox-card ${draftInputs.recycleMetal ? 'selected' : ''}" id="recycle-metal-box" tabindex="0" role="checkbox" aria-checked="${draftInputs.recycleMetal ? 'true' : 'false'}">
                 <div class="checkbox-custom"></div>
                 <div>Metal Cans & Foil</div>
               </label>
@@ -227,7 +233,7 @@ export function renderCalculator(onComplete: () => void): void {
         </div>
 
         <!-- Progress Nodes -->
-        <div class="wizard-progress-bar">
+        <div class="wizard-progress-bar" role="progressbar" aria-valuenow="${currentStep}" aria-valuemin="1" aria-valuemax="${totalSteps}">
           <div class="wizard-progress-fill" style="width: ${progressPercent}%;"></div>
           <div class="step-node ${currentStep >= 1 ? 'active' : ''} ${currentStep > 1 ? 'completed' : ''}" title="Transportation">1</div>
           <div class="step-node ${currentStep >= 2 ? 'active' : ''} ${currentStep > 2 ? 'completed' : ''}" title="Home Energy">2</div>
@@ -285,13 +291,13 @@ export function renderCalculator(onComplete: () => void): void {
           renderWizard();
         } else {
           // Final Submit
+          updateUserName(draftUserName);
           const updatedState = updateCalculatorInputs(draftInputs);
           showToast('Calculator updated! Gross footprint calculated.', 'success');
           
           // Trigger first calculation unlock badge if appropriate
           const justCalcBadge = updatedState.badges.find(b => b.id === 'first_calc');
           if (justCalcBadge?.unlocked && justCalcBadge.unlockedAt === new Date().toISOString().split('T')[0]) {
-            // Check if user was rewarded
             showToast('Achievement Unlocked: Climate Aware!', 'info');
           }
 
@@ -305,9 +311,13 @@ export function renderCalculator(onComplete: () => void): void {
       // Vehicle selector
       const cards = form?.querySelectorAll('.select-card');
       cards?.forEach(card => {
-        card.addEventListener('click', () => {
-          cards.forEach(c => c.classList.remove('selected'));
+        const triggerSelect = () => {
+          cards.forEach(c => {
+            c.classList.remove('selected');
+            c.setAttribute('aria-pressed', 'false');
+          });
           card.classList.add('selected');
+          card.setAttribute('aria-pressed', 'true');
           
           const val = card.getAttribute('data-val') as any;
           draftInputs.vehicleType = val;
@@ -320,6 +330,14 @@ export function renderCalculator(onComplete: () => void): void {
             } else {
               carGroup.classList.remove('hidden');
             }
+          }
+        };
+
+        card.addEventListener('click', triggerSelect);
+        card.addEventListener('keydown', (e: any) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            triggerSelect();
           }
         });
       });
@@ -379,13 +397,20 @@ export function renderCalculator(onComplete: () => void): void {
       // Solar Checkbox
       const solarCard = document.getElementById('solar-checkbox');
       if (solarCard) {
+        const triggerSolar = () => {
+          draftInputs.hasSolar = !draftInputs.hasSolar;
+          solarCard.classList.toggle('selected', draftInputs.hasSolar);
+          solarCard.setAttribute('aria-checked', draftInputs.hasSolar ? 'true' : 'false');
+        };
+
         solarCard.addEventListener('click', (e) => {
           e.preventDefault();
-          draftInputs.hasSolar = !draftInputs.hasSolar;
-          if (draftInputs.hasSolar) {
-            solarCard.classList.add('selected');
-          } else {
-            solarCard.classList.remove('selected');
+          triggerSolar();
+        });
+        solarCard.addEventListener('keydown', (e: any) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            triggerSolar();
           }
         });
       }
@@ -395,10 +420,22 @@ export function renderCalculator(onComplete: () => void): void {
       // Diet Cards
       const dietCards = form?.querySelectorAll('.select-card[data-diet]');
       dietCards?.forEach(card => {
-        card.addEventListener('click', () => {
-          dietCards.forEach(c => c.classList.remove('selected'));
+        const triggerDiet = () => {
+          dietCards.forEach(c => {
+            c.classList.remove('selected');
+            c.setAttribute('aria-pressed', 'false');
+          });
           card.classList.add('selected');
+          card.setAttribute('aria-pressed', 'true');
           draftInputs.dietType = card.getAttribute('data-diet') as any;
+        };
+
+        card.addEventListener('click', triggerDiet);
+        card.addEventListener('keydown', (e: any) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            triggerDiet();
+          }
         });
       });
 
@@ -435,33 +472,41 @@ export function renderCalculator(onComplete: () => void): void {
       const glassBox = document.getElementById('recycle-glass-box');
       const metalBox = document.getElementById('recycle-metal-box');
 
-      paperBox?.addEventListener('click', (e) => {
-        e.preventDefault();
-        draftInputs.recyclePaper = !draftInputs.recyclePaper;
-        paperBox.classList.toggle('selected', draftInputs.recyclePaper);
-      });
+      const bindRecycling = (box: HTMLElement | null, field: keyof CalculatorInputs) => {
+        if (!box) return;
+        const triggerRecycle = () => {
+          const val = !draftInputs[field];
+          (draftInputs as any)[field] = val;
+          box.classList.toggle('selected', val);
+          box.setAttribute('aria-checked', val ? 'true' : 'false');
+        };
 
-      plasticBox?.addEventListener('click', (e) => {
-        e.preventDefault();
-        draftInputs.recyclePlastic = !draftInputs.recyclePlastic;
-        plasticBox.classList.toggle('selected', draftInputs.recyclePlastic);
-      });
+        box.addEventListener('click', (e) => {
+          e.preventDefault();
+          triggerRecycle();
+        });
+        box.addEventListener('keydown', (e: any) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            triggerRecycle();
+          }
+        });
+      };
 
-      glassBox?.addEventListener('click', (e) => {
-        e.preventDefault();
-        draftInputs.recycleGlass = !draftInputs.recycleGlass;
-        glassBox.classList.toggle('selected', draftInputs.recycleGlass);
-      });
-
-      metalBox?.addEventListener('click', (e) => {
-        e.preventDefault();
-        draftInputs.recycleMetal = !draftInputs.recycleMetal;
-        metalBox.classList.toggle('selected', draftInputs.recycleMetal);
-      });
+      bindRecycling(paperBox, 'recyclePaper');
+      bindRecycling(plasticBox, 'recyclePlastic');
+      bindRecycling(glassBox, 'recycleGlass');
+      bindRecycling(metalBox, 'recycleMetal');
     }
   }
 
   function saveCurrentStepData(): void {
+    // Collect username in Step 1
+    const nameInput = document.getElementById('user-name-input') as HTMLInputElement;
+    if (nameInput) {
+      draftUserName = nameInput.value.trim() || 'Eco Citizen';
+    }
+
     // Collect flight hours from step 1 fields if they exist
     const flightsShortInput = document.getElementById('flights-short') as HTMLInputElement;
     const flightsLongInput = document.getElementById('flights-long') as HTMLInputElement;

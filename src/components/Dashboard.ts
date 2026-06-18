@@ -5,12 +5,12 @@ import { CARBON_STANDARDS } from '../core/calculator';
 export function renderDashboard(onNavigate: (tabId: string) => void): void {
   const viewport = document.getElementById('app-viewport');
   if (!viewport) return;
+  const vp = viewport;
 
   const state = getAppState();
   
   if (!state.onboardingCompleted) {
-    // Show welcome screen if calculator has never been run
-    viewport.innerHTML = `
+    vp.innerHTML = `
       <div class="welcome-screen glass-card">
         <div style="font-size: 64px; margin-bottom: 20px;">🌱</div>
         <h1 class="welcome-title">Welcome to EcoSphere</h1>
@@ -62,7 +62,7 @@ export function renderDashboard(onNavigate: (tabId: string) => void): void {
   categories.sort((a, b) => b.val - a.val);
   const highestCategory = categories[0];
 
-  viewport.innerHTML = `
+  vp.innerHTML = `
     <!-- Top Stats Row -->
     <div class="stat-bar-grid">
       <div class="glass-card stat-item">
@@ -77,9 +77,10 @@ export function renderDashboard(onNavigate: (tabId: string) => void): void {
         <div class="stat-title">Net Footprint</div>
         <div class="stat-value">${netFootprint.toLocaleString()} <span style="font-size: 14px;">kg CO2e</span></div>
       </div>
-      <div class="glass-card stat-item" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+      <div class="glass-card stat-item" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 8px;">
         <div class="stat-title">Rating Status</div>
-        <div class="status-indicator ${statusClass} mt-4" style="padding: 8px 16px; border-radius: 16px; font-size: 13px;">${statusText}</div>
+        <div class="status-indicator ${statusClass}" style="padding: 4px 12px; border-radius: 12px; font-size: 12px;">${statusText}</div>
+        ${netFootprint <= 0 ? `<button class="btn btn-secondary" id="btn-view-cert" style="padding: 6px 12px; font-size: 11px; font-weight: 700; margin-top: 4px; border-color: var(--primary-light);">📜 View Certificate</button>` : ''}
       </div>
     </div>
 
@@ -214,6 +215,85 @@ export function renderDashboard(onNavigate: (tabId: string) => void): void {
   document.getElementById('btn-quick-calc')?.addEventListener('click', () => onNavigate('calculator'));
   document.getElementById('btn-quick-habits')?.addEventListener('click', () => onNavigate('habits'));
   document.getElementById('btn-quick-offsets')?.addEventListener('click', () => onNavigate('offsets'));
+
+  // View Certificate
+  if (netFootprint <= 0) {
+    document.getElementById('btn-view-cert')?.addEventListener('click', () => {
+      showCertificateModal();
+    });
+  }
+
+  function showCertificateModal(): void {
+    const modalContainer = document.getElementById('modal-container');
+    if (!modalContainer) return;
+
+    const verifyId = `ES-2026-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    const todayStr = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+
+    modalContainer.innerHTML = `
+      <div class="modal-content" style="max-width: 600px; padding: 24px; border: none; background: transparent; box-shadow: none;">
+        <button class="modal-close" id="btn-close-cert" style="color: white; font-size: 32px; right: -10px; top: -10px;" aria-label="Close Certificate">&times;</button>
+        
+        <div class="certificate-box">
+          <div class="certificate-title">Certificate of Carbon Neutrality</div>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em;">This is proudly presented to</p>
+          
+          <div class="certificate-name">${state.userName}</div>
+          
+          <p style="font-size: 13.5px; line-height: 1.5; color: #475569; max-width: 460px; margin: 0 auto 20px auto;">
+            for successfully neutralizing their calculated annual greenhouse gas emissions through green habits and clean energy sponsorships, achieving a net-zero carbon ledger.
+          </p>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1; padding: 12px 0; max-width: 440px; margin: 0 auto; font-size: 12px; color: #475569;">
+            <div>
+              <span style="display: block; font-weight: 500;">Annual Gross</span>
+              <strong style="color: #ef4444; font-size: 14px;">${grossFootprint.toLocaleString()} kg</strong>
+            </div>
+            <div>
+              <span style="display: block; font-weight: 500;">Offsets Applied</span>
+              <strong style="color: #10b981; font-size: 14px;">-${totalOffsets.toLocaleString()} kg</strong>
+            </div>
+            <div>
+              <span style="display: block; font-weight: 500;">Net Balance</span>
+              <strong style="color: #047857; font-size: 14px;">0 kg CO2e</strong>
+            </div>
+          </div>
+
+          <div class="certificate-seal">
+            NET-ZERO<br>APPROVED<br>🌿
+          </div>
+
+          <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748b; margin-top: 25px; padding: 0 10px;">
+            <span>Date: ${todayStr}</span>
+            <span>ID: ${verifyId}</span>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+          <button class="btn btn-primary" id="btn-print-cert" style="padding: 10px 20px; font-size: 14px;">🖨️ Print Certificate</button>
+          <button class="btn btn-secondary" id="btn-cert-close" style="padding: 10px 20px; font-size: 14px; color: white;">Done</button>
+        </div>
+      </div>
+    `;
+
+    modalContainer.classList.remove('hidden');
+
+    const closeModal = () => {
+      modalContainer.classList.add('hidden');
+    };
+
+    document.getElementById('btn-close-cert')?.addEventListener('click', closeModal);
+    document.getElementById('btn-cert-close')?.addEventListener('click', closeModal);
+    
+    const printBtn = document.getElementById('btn-print-cert');
+    printBtn?.addEventListener('click', () => {
+      window.print();
+    });
+
+    modalContainer.addEventListener('click', (e) => {
+      if (e.target === modalContainer) closeModal();
+    });
+  }
 
   // Initialize charts after rendering elements
   setTimeout(() => {

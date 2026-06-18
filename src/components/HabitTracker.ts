@@ -51,15 +51,15 @@ export function renderHabitTracker(onUpdateNav: () => void): void {
           <div class="glass-card mb-4">
             <h3 class="mb-4">Log Daily Habits</h3>
             
-            <div class="habits-filter-bar">
-              <button class="filter-btn ${activeFilter === 'all' ? 'active' : ''}" data-filter="all">All Categories</button>
-              <button class="filter-btn ${activeFilter === 'transport' ? 'active' : ''}" data-filter="transport">Transport</button>
-              <button class="filter-btn ${activeFilter === 'energy' ? 'active' : ''}" data-filter="energy">Home Energy</button>
-              <button class="filter-btn ${activeFilter === 'food' ? 'active' : ''}" data-filter="food">Diet & Food</button>
-              <button class="filter-btn ${activeFilter === 'waste' ? 'active' : ''}" data-filter="waste">Waste & Recycling</button>
+            <div class="habits-filter-bar" role="tablist" aria-label="Habit Categories">
+              <button class="filter-btn ${activeFilter === 'all' ? 'active' : ''}" data-filter="all" role="tab" aria-selected="${activeFilter === 'all' ? 'true' : 'false'}">All Categories</button>
+              <button class="filter-btn ${activeFilter === 'transport' ? 'active' : ''}" data-filter="transport" role="tab" aria-selected="${activeFilter === 'transport' ? 'true' : 'false'}">Transport</button>
+              <button class="filter-btn ${activeFilter === 'energy' ? 'active' : ''}" data-filter="energy" role="tab" aria-selected="${activeFilter === 'energy' ? 'true' : 'false'}">Home Energy</button>
+              <button class="filter-btn ${activeFilter === 'food' ? 'active' : ''}" data-filter="food" role="tab" aria-selected="${activeFilter === 'food' ? 'true' : 'false'}">Diet & Food</button>
+              <button class="filter-btn ${activeFilter === 'waste' ? 'active' : ''}" data-filter="waste" role="tab" aria-selected="${activeFilter === 'waste' ? 'true' : 'false'}">Waste & Recycling</button>
             </div>
 
-            <div class="habits-list">
+            <div class="habits-list" role="feed" aria-busy="false">
               ${filteredHabits.map(habit => {
                 const isCompletedToday = habit.completedDates.includes(todayStr);
                 const count = habit.completedDates.length;
@@ -77,7 +77,7 @@ export function renderHabitTracker(onUpdateNav: () => void): void {
                         <span>Logged: <strong style="color: var(--text-primary);">${count} ${count === 1 ? 'time' : 'times'}</strong></span>
                       </div>
                     </div>
-                    <button class="habit-action-btn" aria-label="Mark habit ${habit.title} completed" title="Toggle Daily Completion">
+                    <button class="habit-action-btn" aria-label="Mark habit ${habit.title} completed" title="Toggle Daily Completion" role="checkbox" aria-checked="${isCompletedToday ? 'true' : 'false'}">
                       ${isCompletedToday ? '✓' : '+'}
                     </button>
                   </div>
@@ -100,6 +100,12 @@ export function renderHabitTracker(onUpdateNav: () => void): void {
               <div style="font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-top: 4px;">
                 Rank Level: ${state.level}
               </div>
+              
+              <!-- Streak counter display -->
+              <div style="display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 6px 14px; background: rgba(245, 158, 11, 0.12); border-radius: 20px; font-size: 13px; font-weight: 700; color: hsl(35, 100%, 55%); border: 1px solid rgba(245, 158, 11, 0.2);" title="Conescutives days active logging green habits. Keep it up!">
+                <span>🔥</span>
+                <span>${state.streakCount} Day Streak</span>
+              </div>
             </div>
             
             <div style="font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border-glass); padding-top: 14px;">
@@ -108,12 +114,12 @@ export function renderHabitTracker(onUpdateNav: () => void): void {
           </div>
 
           <!-- Badges achievement grid -->
-          <div class="glass-card">
+          <div class="glass-card" aria-label="Badges Achievement Grid">
             <h3 class="mb-4">Unlocked Badges</h3>
-            <div class="badge-grid">
+            <div class="badge-grid" role="group" aria-label="Achievements">
               ${state.badges.map(badge => {
                 return `
-                  <div class="badge-card ${badge.unlocked ? 'unlocked' : ''}" title="${badge.requirement}">
+                  <div class="badge-card ${badge.unlocked ? 'unlocked' : ''}" title="${badge.requirement}" tabindex="0" role="img" aria-label="Badge: ${badge.title}. ${badge.unlocked ? `Unlocked on ${badge.unlockedAt}` : `Locked. Requirement: ${badge.requirement}`}">
                     <div class="badge-icon-wrapper">
                       ${getBadgeIcon(badge.iconType)}
                     </div>
@@ -171,13 +177,12 @@ export function renderHabitTracker(onUpdateNav: () => void): void {
             showToast('Action log removed.', 'info');
           }
 
-          // Check for newly unlocked badges inside the loop
+          // Check for newly unlocked badges
           const oldState = getAppState();
           const oldUnlockedCount = oldState.badges.filter(b => b.unlocked).length;
           const newUnlockedCount = result.state.badges.filter(b => b.unlocked).length;
           
           if (newUnlockedCount > oldUnlockedCount) {
-            // Unlocked a badge
             triggerConfetti();
             const justUnlocked = result.state.badges
               .filter((b, idx) => b.unlocked && !oldState.badges[idx].unlocked)
@@ -192,6 +197,18 @@ export function renderHabitTracker(onUpdateNav: () => void): void {
         });
       }
     });
+
+    // Badge cards keyboard accessibility
+    const badgeCards = vp.querySelectorAll('.badge-card');
+    badgeCards.forEach(card => {
+      card.addEventListener('keydown', (e: any) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const req = card.getAttribute('title');
+          if (req) showToast(`Requirement: ${req}`, 'info');
+        }
+      });
+    });
   }
 
   function showLevelUpModal(level: number): void {
@@ -199,10 +216,10 @@ export function renderHabitTracker(onUpdateNav: () => void): void {
     if (!modalContainer) return;
 
     modalContainer.innerHTML = `
-      <div class="modal-content">
-        <button class="modal-close" id="btn-close-modal">&times;</button>
+      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="lvl-up-title">
+        <button class="modal-close" id="btn-close-modal" aria-label="Close Modal">&times;</button>
         <div style="font-size: 72px; margin-bottom: 15px; animation: float-leaf 2s infinite;">🎉</div>
-        <h2 style="font-size: 28px; background: linear-gradient(135deg, var(--primary-light), var(--accent-teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        <h2 id="lvl-up-title" style="font-size: 28px; background: linear-gradient(135deg, var(--primary-light), var(--accent-teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
           Level Up!
         </h2>
         <h3 style="font-size: 22px; margin: 10px 0;">You have reached Level ${level}</h3>

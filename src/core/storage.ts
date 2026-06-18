@@ -288,11 +288,14 @@ function createInitialState(): AppState {
     footprint,
     ecoPoints: 0,
     level: 1,
-    habits: DEFAULT_HABITS,
-    badges: DEFAULT_BADGES,
+    habits: JSON.parse(JSON.stringify(DEFAULT_HABITS)),
+    badges: JSON.parse(JSON.stringify(DEFAULT_BADGES)),
     offsetPurchases: [],
     onboardingCompleted: false,
-    theme: 'dark'
+    theme: 'dark',
+    userName: 'Eco Citizen',
+    streakCount: 0,
+    lastActiveDate: ''
   };
 }
 
@@ -316,6 +319,9 @@ export function getAppState(): AppState {
     if (state.ecoPoints === undefined) state.ecoPoints = 0;
     if (state.level === undefined) state.level = 1;
     if (!state.theme) state.theme = 'dark';
+    if (state.userName === undefined) state.userName = 'Eco Citizen';
+    if (state.streakCount === undefined) state.streakCount = 0;
+    if (state.lastActiveDate === undefined) state.lastActiveDate = '';
     
     return state;
   } catch (e) {
@@ -381,8 +387,55 @@ export function getNetFootprint(state: AppState): number {
 }
 
 /**
- * Toggles habit completion status for a specific date (YYYY-MM-DD)
+ * Calculates current active streak of daily green actions backwards from today or yesterday
  */
+export function calculateStreak(state: AppState): number {
+  const allDates = new Set<string>();
+  state.habits.forEach(h => {
+    h.completedDates.forEach(d => allDates.add(d));
+  });
+  if (allDates.size === 0) return 0;
+
+  const today = new Date();
+  const format = (d: Date) => d.toISOString().split('T')[0];
+  
+  const todayStr = format(today);
+  
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = format(yesterday);
+
+  // If neither today nor yesterday has logged habits, the streak is broken
+  if (!allDates.has(todayStr) && !allDates.has(yesterdayStr)) {
+    return 0;
+  }
+
+  // Count backwards from whichever active date is closest (today or yesterday)
+  let streak = 0;
+  const checkDate = new Date(allDates.has(todayStr) ? todayStr : yesterdayStr);
+  
+  while (true) {
+    const checkStr = format(checkDate);
+    if (allDates.has(checkStr)) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+/**
+ * Updates the user's name
+ */
+export function updateUserName(name: string): AppState {
+  const state = getAppState();
+  state.userName = name.trim() || 'Eco Citizen';
+  saveAppState(state);
+  return state;
+}
+
 export function toggleHabitCompletion(habitId: string, dateStr: string): { state: AppState; pointsAwarded: number; leveledUp: boolean } {
   const state = getAppState();
   const habit = state.habits.find(h => h.id === habitId);
@@ -402,6 +455,14 @@ export function toggleHabitCompletion(habitId: string, dateStr: string): { state
     pointsAwarded = habit.points;
   }
   
+  // Update streak count
+  state.streakCount = calculateStreak(state);
+  if (state.streakCount > 0) {
+    state.lastActiveDate = dateStr;
+  } else {
+    state.lastActiveDate = '';
+  }
+
   const oldLevel = state.level;
   state.ecoPoints = Math.max(0, state.ecoPoints + pointsAwarded);
   state.level = calculateLevel(state.ecoPoints);

@@ -84,4 +84,7 @@ export interface AppState {
   offsetPurchases: OffsetPurchase[];
   onboardingCompleted: boolean;
   theme: 'dark' | 'light';
+  userName: string;
+  streakCount: number;
+  lastActiveDate: string;
 }
